@@ -1,0 +1,9 @@
+@baseUrl = http://localhost:3000
+
+GET {{baseUrl}}
+###
+GET {{baseUrl}}/tasks
+###
+GET {{baseUrl}}/tasks/1234
+###
+GET {{baseUrl}}/tasks/1234
