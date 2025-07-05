@@ -1,9 +1,31 @@
 @baseUrl = http://localhost:3000
+@contentType = application/json
 
+@id=89c55241-4959-4ed9-83f4-a19d6a4f65e5
 GET {{baseUrl}}
 ###
 GET {{baseUrl}}/tasks
 ###
-GET {{baseUrl}}/tasks/1234
-###
-GET {{baseUrl}}/tasks/1234
+GET {{baseUrl}}/tasks/5eb17649-9b82-4332-bef1-b422fd80d51d
+
+### Delete task
+DELETE {{baseUrl}}/tasks/{{id}}
+
+### Post request
+Post {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+    "name": "Learning Nextjs",
+    "description": "Doing a course by Jonas is a way to go",
+    "status": "OPEN",
+    "userId": "123e4567-e89b-12d3-a456-426614174000", 
+    "labels": [{"name": "Urgent"}]
+}
+
+### Post request add labels
+Post {{baseUrl}}/tasks/0c099690-88c4-4544-ac71-a996714588d6/labels
+Content-Type: {{contentType}}
+[
+    {"name": "Urgent"}
+]

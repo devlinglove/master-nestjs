@@ -1,11 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/user.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { TaskLabel } from './task-label.entity';
 
 export enum TaskStatus {
-  OPEN,
-  IN_PROGRESS,
-  DONE,
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
 }
-
 @Entity('tasks')
 export class Task {
   @PrimaryGeneratedColumn('uuid')
@@ -27,4 +34,15 @@ export class Task {
     default: TaskStatus.OPEN,
   })
   status: TaskStatus;
+
+  @Column()
+  userId: string;
+
+  @ManyToOne(() => User, (user) => user.tasks)
+  user: User;
+
+  @OneToMany(() => TaskLabel, (tLabel) => tLabel.task, {
+    cascade: true,
+  })
+  labels: TaskLabel[];
 }
