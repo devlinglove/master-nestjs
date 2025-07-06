@@ -1,26 +1,30 @@
 @baseUrl = http://localhost:3000
 @contentType = application/json
-
-@id=89c55241-4959-4ed9-83f4-a19d6a4f65e5
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWhzYW4iLCJzdWIiOiIyMGE5ZWM1MS02ZDhmLTRmM2UtYTI2YS0xZDZiMDMyMjBiZmEiLCJpYXQiOjE3NTE3ODkwMTUsImV4cCI6MTc1MTc5MjYxNX0.6-Rzm5fNp-ABRSPd1tsZMvpXRniOwmx0ogLdnPuRZII
+@id=cef3474e-4e81-4330-b6af-9904e5b6b2f5
 GET {{baseUrl}}
 ###
 GET {{baseUrl}}/tasks
-###
+
+### Task by search
+GET {{baseUrl}}/tasks?search=doing
+
+### Task by id
 GET {{baseUrl}}/tasks/5eb17649-9b82-4332-bef1-b422fd80d51d
 
 ### Delete task
 DELETE {{baseUrl}}/tasks/{{id}}
 
-### Post request
+### Post Adding task
 Post {{baseUrl}}/tasks
 Content-Type: {{contentType}}
 
 {
-    "name": "Learning Nextjs",
+    "name": "Learning nestjs",
     "description": "Doing a course by Jonas is a way to go",
     "status": "OPEN",
-    "userId": "123e4567-e89b-12d3-a456-426614174000", 
-    "labels": [{"name": "Urgent"}]
+    "userId": "{{id}}", 
+    "labels": [{"name": "Electricity Bill"}]
 }
 
 ### Post request add labels
@@ -35,15 +39,30 @@ Post {{baseUrl}}/auth/register
 Content-Type: {{contentType}}
 
 {
-    "name": "Umar",
-    "email": "tenamos275@iamtile.com",
+    "name": "Ahsan",
+    "email": "lavyvome@fxzig.com",
     "password": "Zxcvb123@"
 }
-### Post request add user
+### Post request login user
 Post {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-    "email": "tenamos275@iamtile.com",
-    "password": "Zxcvb123@3"
+    "email": "rujepotu@cyclelove.cc",
+    "password": "Zxcvb123@"
 }
+### Post request login user
+Post {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "lavyvome@fxzig.com",
+    "password": "Zxcvb123@"
+}
+
+### User profile
+GET {{baseUrl}}/auth/profile
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+

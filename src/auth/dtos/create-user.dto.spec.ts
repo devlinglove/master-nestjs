@@ -1,5 +1,5 @@
 import { validate } from 'class-validator';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserDto } from './create-user.dto';
 
 describe('CreateUserDto', () => {
   const dto = new CreateUserDto();

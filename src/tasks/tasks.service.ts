@@ -6,6 +6,8 @@ import { CreateTaskDto } from './create-task.dto';
 import { UpdateTaskDto } from './update-task.dto';
 import { TaskLabel } from './task-label.entity';
 import { CreateTaskLabelDto } from './task-label.dto';
+import { FindTaskParams } from './find-task.params';
+import { PaginationParams } from 'src/common/pagination.params';
 
 @Injectable()
 export class TasksService {
@@ -16,8 +18,45 @@ export class TasksService {
     private taskLabelRepository: Repository<TaskLabel>,
   ) {}
 
-  public async findAll(): Promise<Task[]> {
-    return await this.taskRepository.find();
+  public async findAll(
+    findTaskParams: FindTaskParams,
+    paginParams: PaginationParams,
+  ): Promise<[Task[], number]> {
+    // const whereFilter: FindOptionsWhere<Task> = {};
+    // if (findTaskParams.status) {
+    //   whereFilter.status = findTaskParams.status;
+    // }
+    // if (findTaskParams.search && findTaskParams.search.trim()) {
+    //   whereFilter.name = Like(`%${findTaskParams.search}%`);
+    //   //whereFilter.description = Like(`%${findTaskParams.search}%`);
+    // }
+    // return await this.taskRepository.findAndCount({
+    //   where: whereFilter,
+    //   skip: paginParams.offset,
+    //   take: paginParams.limit,
+    // });
+
+    const query = this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.labels', 'labels');
+    if (findTaskParams.status) {
+      query.andWhere('task.status=:status', { status: findTaskParams.status });
+    }
+    if (findTaskParams.search) {
+      query.andWhere(
+        '(task.name ILIKE :search OR task.description ILIKE :search)',
+        { search: `%${findTaskParams.search}%` },
+      );
+    }
+
+    if (findTaskParams.labels && findTaskParams.labels.length > 0) {
+      query.andWhere('labels.name IN (:...names)', {
+        names: findTaskParams.labels,
+      });
+    }
+
+    query.skip(paginParams.offset).take(paginParams.limit);
+    return query.getManyAndCount();
   }
   public async findOne(id: string): Promise<Task | null> {
     return await this.taskRepository.findOne({

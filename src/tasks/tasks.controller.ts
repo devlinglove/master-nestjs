@@ -10,6 +10,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
@@ -17,14 +18,30 @@ import { CreateTaskDto } from './create-task.dto';
 import { FindOneParams } from './find-one.params';
 import { UpdateTaskDto } from './update-task.dto';
 import { CreateTaskLabelDto } from './task-label.dto';
+import { FindTaskParams } from './find-task.params';
+import { PaginationParams } from 'src/common/pagination.params';
+import { PaginatedResponse } from 'src/common/pagination.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  public async findAll(): Promise<Task[]> {
-    return await this.tasksService.findAll();
+  public async findAll(
+    @Query() findParams: FindTaskParams,
+    @Query() paginParams: PaginationParams,
+  ): Promise<PaginatedResponse<Task>> {
+    const [items, count] = await this.tasksService.findAll(
+      findParams,
+      paginParams,
+    );
+    return {
+      data: items,
+      meta: {
+        total: count,
+        ...paginParams,
+      },
+    };
   }
   @Get('/:id')
   public async findOne(@Param() params: { id: string }): Promise<Task> {

@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Post,
+  Get,
   Request,
   SerializeOptions,
   UseGuards,
@@ -13,6 +14,8 @@ import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { User } from 'src/users/user.entity';
 import { LoginResponse } from './dtos/login-response';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { UserProfileDto } from './dtos/user-profile.dto';
 
 interface AuthenticatedRequest extends Request {
   user: User;
@@ -34,5 +37,12 @@ export class AuthController {
   @Post('register')
   public async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     return await this.authService.register(createUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req: AuthenticatedRequest): UserProfileDto {
+    //get user id from request and call user service endpoint to get the data.
+    return new UserProfileDto(req.user);
   }
 }

@@ -22,7 +22,7 @@ export class TaskLabel {
   name: string;
 
   @Column({
-    unique: true,
+    unique: false,
   })
   @Index()
   taskId: string;
