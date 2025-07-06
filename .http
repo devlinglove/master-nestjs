@@ -29,3 +29,21 @@ Content-Type: {{contentType}}
 [
     {"name": "Urgent"}
 ]
+
+### Post request add user
+Post {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+    "name": "Umar",
+    "email": "tenamos275@iamtile.com",
+    "password": "Zxcvb123@"
+}
+### Post request add user
+Post {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "tenamos275@iamtile.com",
+    "password": "Zxcvb123@"
+}

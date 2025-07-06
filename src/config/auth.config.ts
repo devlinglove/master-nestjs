@@ -25,7 +25,7 @@ export interface AuthConfig {
 }
 
 export const authConfig = registerAs(
-  'jwt',
+  'auth',
   (): AuthConfig => ({
     secret: process.env.JWT_SECRET,
     signOptions: {

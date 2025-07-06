@@ -1,11 +1,17 @@
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from './user/user.service';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './create-user.dto';
 import { User } from './user.entity';
 import { PasswordService } from './password/password.service';
 import { LoginDto } from './login.dto';
+import { LoginResponse } from './login-response';
 
+@Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
@@ -13,11 +19,11 @@ export class AuthService {
     private passwordService: PasswordService,
   ) {}
 
-  public async login(loginDto: LoginDto) {
+  public async login(loginDto: LoginDto): Promise<LoginResponse> {
     const { email, password } = loginDto;
     const user = await this.userService.findUserByEmail(email);
     if (!user) {
-      return new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
     const isValidPassword = await this.passwordService.verify(
       password,
@@ -26,7 +32,9 @@ export class AuthService {
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return this.generateToken(user);
+    const token = this.generateToken(user);
+    const userWithToken = Object.assign(new LoginResponse(), user, { token });
+    return userWithToken;
   }
 
   public async register(createUserDto: CreateUserDto): Promise<User> {
@@ -39,6 +47,7 @@ export class AuthService {
   }
 
   private generateToken(user: User) {
-    return this.jwtService.sign({ name: user.name, sub: user.id });
+    const payload = { name: user.name, sub: user.id };
+    return this.jwtService.sign(payload);
   }
 }
