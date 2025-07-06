@@ -1,15 +1,14 @@
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from './user/user.service';
+import { UserService } from '../users/user.service';
 import {
   ConflictException,
   Injectable,
-  UnauthorizedException,
+
 } from '@nestjs/common';
-import { CreateUserDto } from './create-user.dto';
-import { User } from './user.entity';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { User } from '../users/user.entity';
 import { PasswordService } from './password/password.service';
-import { LoginDto } from './login.dto';
-import { LoginResponse } from './login-response';
+
 
 @Injectable()
 export class AuthService {
@@ -19,22 +18,19 @@ export class AuthService {
     private passwordService: PasswordService,
   ) {}
 
-  public async login(loginDto: LoginDto): Promise<LoginResponse> {
-    const { email, password } = loginDto;
+  public async login(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findUserByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      return null;
     }
     const isValidPassword = await this.passwordService.verify(
       password,
       user.password,
     );
     if (!isValidPassword) {
-      throw new UnauthorizedException('Invalid credentials');
+      return null;
     }
-    const token = this.generateToken(user);
-    const userWithToken = Object.assign(new LoginResponse(), user, { token });
-    return userWithToken;
+    return user;
   }
 
   public async register(createUserDto: CreateUserDto): Promise<User> {
@@ -43,10 +39,19 @@ export class AuthService {
     if (user) {
       throw new ConflictException('User already exists');
     }
-    return this.userService.createUser(createUserDto);
+    const hashedPassword = await this.passwordService.hash(
+      createUserDto.password,
+    );
+
+    const userWithHashedPassword = {
+      ...createUserDto,
+      password: hashedPassword,
+    };
+
+    return this.userService.createUser(userWithHashedPassword);
   }
 
-  private generateToken(user: User) {
+  public generateToken(user: User) {
     const payload = { name: user.name, sub: user.id };
     return this.jwtService.sign(payload);
   }

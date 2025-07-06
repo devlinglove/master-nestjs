@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { Task } from './tasks/task.entity';
 import { User } from './users/user.entity';
 import { TaskLabel } from './tasks/task-label.entity';
+import { AuthModule } from './auth/auth.module';
 
 // forRootAsync is the dynamic loading configuration module (run-time)
 @Module({
@@ -29,6 +30,7 @@ import { TaskLabel } from './tasks/task-label.entity';
     }),
     ConfigModule.forRoot({
       load: [appConfig, typeOrmConfig, authConfig],
+      isGlobal: true,
       validationSchema: appConfigSchema,
       validationOptions: {
         //allowUnknown: false,
@@ -38,6 +40,7 @@ import { TaskLabel } from './tasks/task-label.entity';
     //TypeOrmModule.forRoot(typeOrmConfig()),
     TaskModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
